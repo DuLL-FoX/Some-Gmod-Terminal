@@ -25,5 +25,6 @@ function ENT:Use(activator, caller)
     net.Start("TerminalText")
     net.WriteEntity(self)
     net.WriteString(GetTerminalText(self) or "")
+    net.WriteString(GetTerminalPassword(self) or "")
     net.Send(activator)
 end
