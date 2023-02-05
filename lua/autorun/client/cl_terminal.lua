@@ -1,27 +1,33 @@
 net.Receive("TerminalText", function(len, ply)
+    -- Get the entity and text and password
     local entity = net.ReadEntity()
     local text = net.ReadString()
     local password = net.ReadString()
 
+    -- Get the screen size
     local screenHeight = ScrH()
     local screenWidth = ScrW()
 
+    -- Create the terminal frame
     local TerminalFrame = vgui.Create( "DFrame" )
     TerminalFrame:SetSize(screenWidth / 2, screenHeight / 2)
     TerminalFrame:Center()
     TerminalFrame:MakePopup()
     TerminalFrame:SetTitle("Terminal")
 
+    -- Text button
     local TerminalTextButton = vgui.Create("DButton", TerminalFrame)
     TerminalTextButton:SetText("Data")
     TerminalTextButton:SetPos(TerminalFrame:GetWide() * 0.05, TerminalFrame:GetTall() * 0.05)
     TerminalTextButton:SetSize(TerminalFrame:GetWide() * 0.45, TerminalFrame:GetTall() * 0.10)
 
+    -- Settings button
     local TerminalSettingsButton = vgui.Create("DButton", TerminalFrame)
     TerminalSettingsButton:SetText("Settings")
     TerminalSettingsButton:SetPos(TerminalFrame:GetWide() * 0.5, TerminalFrame:GetTall() * 0.05)
     TerminalSettingsButton:SetSize(TerminalFrame:GetWide() * 0.45, TerminalFrame:GetTall() * 0.10)
 
+    -- Text entry box
     local TerminalText = vgui.Create( "DTextEntry", TerminalFrame )
     TerminalText:SetPos(TerminalFrame:GetWide() * 0.05, TerminalFrame:GetTall() * 0.15)
     TerminalText:SetSize(TerminalFrame:GetWide() * 0.90, TerminalFrame:GetTall() * 0.8)
@@ -34,6 +40,7 @@ net.Receive("TerminalText", function(len, ply)
     TerminalTextButton:SetVisible(false)
     TerminalSettingsButton:SetVisible(false)
 
+    -- When the text button is pressed, display the text
     local TerminalPassword = vgui.Create( "DTextEntry", TerminalFrame )
     TerminalPasswordW = TerminalFrame:GetWide() * 0.1
     TerminalPasswordH = TerminalFrame:GetTall() * 0.05
@@ -63,11 +70,13 @@ net.Receive("TerminalText", function(len, ply)
     -- If there is a password, enter it
     else
         TerminalPassword.OnEnter = function(self)
+            -- If the password is correct, display the text
             if self:GetValue() == password then
                 TerminalText:SetVisible(true)
                 TerminalTextButton:SetVisible(true)
                 TerminalSettingsButton:SetVisible(true)
                 self:SetVisible(false)
+            -- If the password is incorrect, display an error
             else
                 local TerminalPasswordError = vgui.Create("DLabel", TerminalFrame)
                 TerminalPasswordError:SetPos(TerminalFrame:GetWide() / 2 - TerminalPasswordW / 2, TerminalFrame:GetTall() / 2 - TerminalPasswordH / 2 + TerminalPasswordH)
@@ -81,8 +90,7 @@ net.Receive("TerminalText", function(len, ply)
         end
     end
 
-
-
+    -- When the text is changed, send it to the server
     TerminalText.OnChange = function(self)
         text = self:GetValue()
         net.Start("TerminalText")

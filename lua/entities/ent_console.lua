@@ -21,7 +21,7 @@ function ENT:Initialize()
     end
 end
 
-function ENT:Use(activator, caller)
+function ENT:Use(activator)
     net.Start("TerminalText")
     net.WriteEntity(self)
     net.WriteString(GetTerminalText(self) or "")
