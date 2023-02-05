@@ -1,7 +1,6 @@
 local terminalText = {}
 
 util.AddNetworkString("TerminalText")
-util.AddNetworkString("terminalText")
 
 net.Receive("TerminalText", function(len, ply)
   local entity = net.ReadEntity()
