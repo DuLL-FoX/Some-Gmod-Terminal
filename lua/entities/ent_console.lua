@@ -4,6 +4,7 @@ ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 ENT.PrintName = "Console"
 ENT.Category = "Consoles"
+ENT.Author = "DuLL_FoX"
 ENT.Spawnable = true
 ENT.AdminOnly = false
 
@@ -22,7 +23,8 @@ function ENT:Initialize()
 end
 
 function ENT:Use(activator)
-    net.Start("TerminalText")
+    if (not activator:IsPlayer()) then return end
+    net.Start("TerminalOpen")
     net.WriteEntity(self)
     net.WriteString(GetTerminalText(self) or "")
     net.WriteString(GetTerminalPassword(self) or "")

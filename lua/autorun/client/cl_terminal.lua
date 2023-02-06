@@ -1,4 +1,4 @@
-net.Receive("TerminalText", function(len, ply)
+net.Receive("TerminalOpen", function(len, ply)
     -- Get the entity and text and password
     local entity = net.ReadEntity()
     local text = net.ReadString()
@@ -35,10 +35,16 @@ net.Receive("TerminalText", function(len, ply)
     TerminalText:SetUpdateOnType(true)
     TerminalText:SetText(text)
 
+    local TerminalDownloadButton = vgui.Create("DButton", TerminalFrame)
+    TerminalDownloadButton:SetText("Download")
+    TerminalDownloadButton:SetPos(TerminalFrame:GetWide() * 0.05, TerminalFrame:GetTall() * 0.95 - TerminalDownloadButton:GetTall())
+    TerminalDownloadButton:SetSize(TerminalFrame:GetWide() * 0.45, TerminalFrame:GetTall() * 0.10)
+
     --Invisible until the correct password is entered
     TerminalText:SetVisible(false)
     TerminalTextButton:SetVisible(false)
     TerminalSettingsButton:SetVisible(false)
+    TerminalDownloadButton:SetVisible(false)
 
     -- When the text button is pressed, display the text
     local TerminalPassword = vgui.Create( "DTextEntry", TerminalFrame )
@@ -56,7 +62,7 @@ net.Receive("TerminalText", function(len, ply)
         TerminalPasswordCreate:SetTextColor(Color(0, 255, 0))
         TerminalPassword.OnEnter = function(self)
             password = self:GetValue()
-            net.Start("TerminalPassword")
+            net.Start("SetTerminalPassword")
             net.WriteEntity(entity)
             net.WriteString(password)
             net.SendToServer()
@@ -65,6 +71,9 @@ net.Receive("TerminalText", function(len, ply)
             TerminalSettingsButton:SetVisible(true)
             self:SetVisible(false)
             TerminalPasswordCreate:Remove()
+            if LocalPlayer():HasWeapon("hand_terminal") then
+                TerminalDownloadButton:SetVisible(true)
+            end
         end
 
     -- If there is a password, enter it
@@ -76,6 +85,9 @@ net.Receive("TerminalText", function(len, ply)
                 TerminalTextButton:SetVisible(true)
                 TerminalSettingsButton:SetVisible(true)
                 self:SetVisible(false)
+                if LocalPlayer():HasWeapon("hand_terminal") then
+                    TerminalDownloadButton:SetVisible(true)
+                end
             -- If the password is incorrect, display an error
             else
                 local TerminalPasswordError = vgui.Create("DLabel", TerminalFrame)
@@ -93,8 +105,38 @@ net.Receive("TerminalText", function(len, ply)
     -- When the text is changed, send it to the server
     TerminalText.OnChange = function(self)
         text = self:GetValue()
-        net.Start("TerminalText")
+        net.Start("SetTerminalText")
         net.WriteEntity(entity)
+        net.WriteString(text)
+        net.SendToServer()
+    end
+
+    TerminalDownloadButton.DoClick = function()
+        net.Start("OpenHandTerminalText")
+        net.WriteString(text)
+        net.SendToServer()
+    end
+
+end)
+
+net.Receive("OpenHandTerminalText", function(len, ply)
+    local text = net.ReadString()
+    local HandFrame = vgui.Create("DFrame")
+    HandFrame:SetSize(500, 500)
+    HandFrame:Center()
+    HandFrame:SetTitle("Terminal Interface")
+    HandFrame:MakePopup()
+
+    local HandText = vgui.Create("DTextEntry", HandFrame)
+    HandText:SetPos(HandFrame:GetWide() * 0.05, HandFrame:GetTall() * 0.15)
+    HandText:SetSize(HandFrame:GetWide() * 0.90, HandFrame:GetTall() * 0.8)
+    HandText:SetMultiline(true)
+    HandText:SetUpdateOnType(true)
+    HandText:SetText(text)
+
+    HandText.OnChange = function(self)
+        text = self:GetValue()
+        net.Start("OpenHandTerminalText")
         net.WriteString(text)
         net.SendToServer()
     end
