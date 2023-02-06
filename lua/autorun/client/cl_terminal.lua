@@ -7,6 +7,10 @@ net.Receive("TerminalOpen", function(len, ply)
     -- Get the screen size
     local screenHeight = ScrH()
     local screenWidth = ScrW()
+	
+	-- Color Presets
+	local ColorCyan = Color(4, 217, 255, 255)
+	local ColorRed = Color(255, 4, 4, 255)
 
     -- Create the terminal frame
     local TerminalFrame = vgui.Create( "DFrame" )
@@ -14,6 +18,15 @@ net.Receive("TerminalOpen", function(len, ply)
     TerminalFrame:Center()
     TerminalFrame:MakePopup()
     TerminalFrame:SetTitle("Terminal")
+	TerminalFrame.Paint = function(self, w, h)
+		surface.SetDrawColor(0, 0, 0, 200)
+	end
+	
+	-- Image of frame
+	local ImageFrame = vgui.Create("DImage", TerminalFrame)
+	ImageFrame:SetSize(TerminalFrame:GetSize())		
+	ImageFrame:SetImage("materials/vgui/frame.png")
+	ImageFrame:SetImageColor(ColorCyan)
 
     -- Text button
     local TerminalTextButton = vgui.Create("DButton", TerminalFrame)
@@ -95,8 +108,10 @@ net.Receive("TerminalOpen", function(len, ply)
                 TerminalPasswordError:SetSize(TerminalPasswordW, TerminalPasswordH)
                 TerminalPasswordError:SetText("Incorrect Password")
                 TerminalPasswordError:SetTextColor(Color(255, 0, 0))
+				ImageFrame:SetImageColor(ColorRed)
                 timer.Simple(1, function()
                     TerminalPasswordError:Remove()
+					ImageFrame:SetImageColor(ColorCyan)
                 end)
             end
         end
