@@ -103,6 +103,45 @@ function OpenConsoleTerminal()
     TerminalDownloadButton.DoClick = function()
         handTerminal:SetHandTerminalText(console:GetConsoleText())
     end
+
+    -- Change the elements to be visible for the settings
+    TerminalSettingsButton.DoClick = function()
+        TerminalText:SetVisible(false)
+        TerminalDownloadButton:SetVisible(false)
+        ChangePassword()
+    end
+
+    -- Change the elements to be visible for the text
+    TerminalTextButton.DoClick = function()
+        if TerminalPasswordChange.IsVisible then
+            TerminalPasswordChange:SetVisible(false)
+            TerminalPassword:SetVisible(false)
+        end
+        TerminalText:SetVisible(true)
+        TerminalDownloadButton:SetVisible(true)
+    end
+end
+
+function ChangePassword()
+    TerminalPasswordChange = vgui.Create("DLabel", TerminalFrame)
+    TerminalPasswordChange:SetPos(TerminalFrame:GetWide() / 2 - TerminalPasswordW / 2, TerminalFrame:GetTall() / 2 - TerminalPasswordH / 2 + TerminalPasswordH)
+    TerminalPasswordChange:SetSize(TerminalPasswordW, TerminalPasswordH)
+    TerminalPasswordChange:SetText("Change Password")
+    TerminalPasswordChange:SetTextColor(Color(0, 255, 0))
+    TerminalPassword:SetVisible(true)
+
+    TerminalPassword.OnEnter = function(self)
+        local password = self:GetValue()
+        net.Start("ConsoleUpdatePassword")
+        net.WriteEntity(console)
+        net.WriteString(password)
+        net.SendToServer()
+        TerminalText:SetVisible(true)
+        TerminalTextButton:SetVisible(true)
+        TerminalSettingsButton:SetVisible(true)
+        TerminalPassword:SetVisible(false)
+        TerminalPasswordChange:SetVisible(false)
+    end
 end
 
 function CreatePassword()
