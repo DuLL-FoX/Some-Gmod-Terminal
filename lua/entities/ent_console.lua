@@ -1,5 +1,8 @@
 if SERVER then
     AddCSLuaFile()
+    util.AddNetworkString("ConsoleUpdateText")
+    util.AddNetworkString("ConsoleUpdatePassword")
+    util.AddNetworkString("SendConsole")
 end
 
 ENT.Type = "anim"
@@ -10,18 +13,16 @@ ENT.Author = "DuLL_FoX"
 ENT.Spawnable = true
 ENT.AdminOnly = false
 
--- Terminal Data
+-- Console Data
 function ENT:SetupDataTables()
-    self:NetworkVar("String", 0, "ConsoleText")
-    self:NetworkVar("String", 1, "ConsolePassword")
+    self:NetworkVar("String", 0, "ConsolePassword")
 
     if SERVER then
-        self:SetConsoleText("")
         self:SetConsolePassword("")
     end
 end
 
--- Terminal Initialize
+-- Console Initialize
 function ENT:Initialize()
     self:SetModel("models/props_lab/securitybank.mdl")
 
@@ -38,10 +39,12 @@ function ENT:Initialize()
     end
 end
 
--- Terminal Use
+-- Console Use
 function ENT:Use(activator)
     if not activator:IsPlayer() then return end
-    net.Start("ConsoleOpen")
+    net.Start("SendConsole")
     net.WriteEntity(self)
+    net.WriteString(GetConsoleText(self))
+    net.WriteString(self:GetConsolePassword())
     net.Send(activator)
 end
