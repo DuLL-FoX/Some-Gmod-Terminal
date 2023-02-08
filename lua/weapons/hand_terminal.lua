@@ -14,11 +14,6 @@ SWEP.Category = "Terminals"
 SWEP.Primary.Automatic = false
 SWEP.Secondary.Automatic = false
 
--- Hand terminal data
-function SWEP:SetupDataTables()
-    self:NetworkVar("String", 0, "HandTerminalText")
-end
-
 -- Open the hand terminal text editor
 function SWEP:PrimaryAttack()
     if not IsValid(self:GetOwner()) or not self:GetOwner():IsPlayer() then return end
@@ -32,9 +27,7 @@ end
 
 -- Network the hand terminal text editor open event
 function SWEP:SendOpenHandTerminalText()
-    if SERVER then
-        net.Start("OpenHandTerminalText")
-        net.WriteEntity(self)
-        net.Send(self:GetOwner())
+    if CLIENT then
+        OpenHandTerminal()
     end
 end
